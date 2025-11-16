@@ -1,48 +1,55 @@
-package com.jpmc.midascore.foundation;
+package com.jpmc.midascore.entity;
 
-import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import jakarta.persistence.*;
 
-@JsonIgnoreProperties(ignoreUnknown = true)
-public class Transaction {
-    private long senderId;
-    private long recipientId;
+@Entity
+public class TransactionRecord {
+    
+    @Id
+    @GeneratedValue
+    private Long id;
+    
+    @Column(nullable = false)
     private float amount;
-
-    public Transaction() {
+    
+    @Column(nullable = false)
+    private float incentive;  // NEW FIELD
+    
+    @ManyToOne
+    @JoinColumn(name = "sender_id", nullable = false)
+    private UserRecord sender;
+    
+    @ManyToOne
+    @JoinColumn(name = "recipient_id", nullable = false)
+    private UserRecord recipient;
+    
+    protected TransactionRecord() {
     }
-
-    public Transaction(long senderId, long recipientId, float amount) {
-        this.senderId = senderId;
-        this.recipientId = recipientId;
+    
+    public TransactionRecord(float amount, float incentive, UserRecord sender, UserRecord recipient) {
         this.amount = amount;
+        this.incentive = incentive;
+        this.sender = sender;
+        this.recipient = recipient;
     }
-
-    public long getSenderId() {
-        return senderId;
+    
+    public Long getId() {
+        return id;
     }
-
-    public void setSenderId(long senderId) {
-        this.senderId = senderId;
-    }
-
-    public long getRecipientId() {
-        return recipientId;
-    }
-
-    public void setRecipientId(long recipientId) {
-        this.recipientId = recipientId;
-    }
-
+    
     public float getAmount() {
         return amount;
     }
-
-    public void setAmount(float amount) {
-        this.amount = amount;
+    
+    public float getIncentive() {
+        return incentive;
     }
-
-    @Override
-    public String toString() {
-        return "Transaction {senderId=" + senderId + ", recipientId=" + recipientId + ", amount=" + amount + "}";
+    
+    public UserRecord getSender() {
+        return sender;
+    }
+    
+    public UserRecord getRecipient() {
+        return recipient;
     }
 }
