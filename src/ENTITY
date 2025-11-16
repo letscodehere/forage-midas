@@ -1,0 +1,28 @@
+@Entity
+public class TransactionRecord {
+    @Id
+    @GeneratedValue
+    private Long id;
+    private Double amount;
+
+    @ManyToOne
+    private User sender;
+    @ManyToOne
+    private User recipient;
+
+    // timestamp, etc.
+}
+public interface UserRepository extends JpaRepository<User, Long> { ... }
+public interface TransactionRecordRepository extends JpaRepository<TransactionRecord, Long> { ... }
+Optional<User> sender = userRepo.findById(transaction.getSenderId());
+Optional<User> recipient = userRepo.findById(transaction.getRecipientId());
+if (sender.isPresent() && recipient.isPresent() && sender.get().getBalance() >= transaction.getAmount()) {
+    sender.get().setBalance(sender.get().getBalance() - transaction.getAmount());
+    recipient.get().setBalance(recipient.get().getBalance() + transaction.getAmount());
+    userRepo.save(sender.get());
+    userRepo.save(recipient.get());
+
+    TransactionRecord record = new TransactionRecord(...);
+    transactionRecordRepo.save(record);
+}
+// else: discard silently
